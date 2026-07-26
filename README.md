@@ -12,31 +12,7 @@ Automation knowledge base and reusable workflows.
 
 ## Facebook Automation
 
-### Architecture
-                           FACEBOOK PAGE                                                
-                                  │
-                                  │
-                         Graph API Explorer
-                                  │
-                                  ▼
-                      Facebook Graph API v23+
-                                  │
-                    Page Access Token (OAuth)
-                                  │
-                                  ▼
-                      n8n HTTP Request Node
-                                  │
-          ┌───────────────────────┼───────────────────────┐
-          │                       │                       │
-          ▼                       ▼                       ▼
-      Create Post            Upload Image          Read Comments
-          │                       │                       │
-          └───────────────────────┼───────────────────────┘
-                                  │
-                                  ▼
-                           Facebook Page
-
-🏗️ Architecture
+### 🏗️ Architecture
 
 ```mermaid
 flowchart TD
