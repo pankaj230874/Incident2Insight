@@ -13,7 +13,7 @@ Automation knowledge base and reusable workflows.
 ## Facebook Automation
 
 ### Architecture
-                           FACEBOOK PAGE
+                           FACEBOOK PAGE                                                
                                   │
                                   │
                          Graph API Explorer
@@ -36,6 +36,25 @@ Automation knowledge base and reusable workflows.
                                   ▼
                            Facebook Page
 
+🏗️ Architecture
+
+```mermaid
+flowchart TD
+
+A[Facebook Page] --> B[Graph API Explorer]
+B --> C[Facebook Graph API v23+]
+C --> D[Page Access Token]
+
+D --> E[n8n HTTP Request]
+
+E --> F[Create Text Post]
+E --> G[Upload Image]
+E --> H[Read Comments]
+
+F --> I[Facebook Page]
+G --> I
+H --> I
+```
 ### Documentation
 - [Facebook Page API n8n Setup Guide](docs/facebook-page-api-n8n-setup-guide.md)
 - [Facebook API Cookbook](docs/facebook-api-cookbook.md)
