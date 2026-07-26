@@ -12,6 +12,24 @@ Automation knowledge base and reusable workflows.
 
 ## Facebook Automation
 
+### Architecture
+Facebook Page
+      │
+      ▼
+Graph API
+      │
+      ▼
+HTTP Request (n8n)
+      │
+      ▼
+AI Agent
+      │
+      ▼
+Supabase
+      │
+      ▼
+Dashboard
+
 ### Documentation
 - [Facebook Page API n8n Setup Guide](docs/facebook-page-api-n8n-setup-guide.md)
 - [Facebook API Cookbook](docs/facebook-api-cookbook.md)
