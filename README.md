@@ -13,22 +13,28 @@ Automation knowledge base and reusable workflows.
 ## Facebook Automation
 
 ### Architecture
-Facebook Page
-      │
-      ▼
-Graph API
-      │
-      ▼
-HTTP Request (n8n)
-      │
-      ▼
-AI Agent
-      │
-      ▼
-Supabase
-      │
-      ▼
-Dashboard
+                           FACEBOOK PAGE
+                                  │
+                                  │
+                         Graph API Explorer
+                                  │
+                                  ▼
+                      Facebook Graph API v23+
+                                  │
+                    Page Access Token (OAuth)
+                                  │
+                                  ▼
+                      n8n HTTP Request Node
+                                  │
+          ┌───────────────────────┼───────────────────────┐
+          │                       │                       │
+          ▼                       ▼                       ▼
+      Create Post            Upload Image          Read Comments
+          │                       │                       │
+          └───────────────────────┼───────────────────────┘
+                                  │
+                                  ▼
+                           Facebook Page
 
 ### Documentation
 - [Facebook Page API n8n Setup Guide](docs/facebook-page-api-n8n-setup-guide.md)
