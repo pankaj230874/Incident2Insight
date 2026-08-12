@@ -1,79 +1,21 @@
-# Incident2Insight Ecosystem
+# Workflow Images
 
-> Documented baseline for the **I2I Content Engine → Facebook Approval → Facebook Publisher** automation.
+Store screenshots here for visual backup and troubleshooting.
 
-## Current Status
-
-**Status: VALIDATED / WORKING**
-
-The end-to-end Facebook content publishing flow has been successfully tested with content ID `I2I-001`.
-
-Validated path:
+Recommended naming:
 
 ```text
-I2I Content Engine
-        ↓
-Google Sheets – Read Pending Row
-        ↓
-AI – Improve Caption
-        ↓
-Generate Branded Image
-        ↓
-Prepare Approval Data
-        ↓
-Google Sheets – Update Row
-        ↓
-Send Approval Email
-        ↓
-Human Approval
-        ↓
-Status = Approved
-        ↓
-Facebook Publisher
-        ↓
-Upload Photo + Caption
-        ↓
-Google Sheets – Update Row
-        ↓
-Status = Published
-        ↓
-Facebook Page
+01-content-engine-overview.png
+02-content-engine-ai-improve-caption.png
+03-content-engine-extract-final-caption.png
+04-content-engine-image-generation.png
+05-content-engine-approval-email.png
+06-facebook-publisher-overview.png
+07-facebook-publisher-upload-photo.png
+08-google-sheet-published-row.png
+09-facebook-live-post.png
 ```
 
-## Repository Structure
+The current GitHub repository screenshot is retained as:
 
-```text
-I2I Content Engine/
-├── README.md
-├── docs/
-│   ├── architecture.md
-│   ├── 01-content-engine.md
-│   ├── 02-approval-flow.md
-│   ├── 03-facebook-publisher.md
-│   ├── backup-checklist.md
-│   ├── test-evidence.md
-│   └── change-log.md
-├── images/
-│   ├── github-repo-current.png
-│   └── README.md
-└── workflows/
-    └── README.md
-```
-
-## Key Design Principle
-
-The Google Sheet is the workflow state store.
-
-Typical lifecycle:
-
-`GENERATED → Waiting Approval → Approved → Published`
-
-The content ID (for example `I2I-001`) is the record key used across the workflow.
-
-## Important
-
-This repository documents the working configuration and provides a place for workflow exports and screenshots.
-
-**Do not store API keys, access tokens, passwords, OAuth secrets, or other credentials in GitHub.**
-
-The actual n8n workflow JSON exports should be added under `workflows/` after exporting them from n8n.
+`github-repo-current.png`
