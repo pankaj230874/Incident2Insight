@@ -1,0 +1,893 @@
+{
+  "name": "1-Facebook_Content_Approval_V2",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7332e515-d9e1-4bcf-be7d-12eb169f1918",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "19GR-ymuUEH1eI6tsXIFz0EQ4M2ibHRwKoHwp6IttNVA",
+          "mode": "list",
+          "cachedResultName": "I2I_Content_Engine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19GR-ymuUEH1eI6tsXIFz0EQ4M2ibHRwKoHwp6IttNVA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "ContentEngine",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19GR-ymuUEH1eI6tsXIFz0EQ4M2ibHRwKoHwp6IttNVA/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "GENERATED"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "99db84cd-bc60-464c-82a0-a0a91c2b15d2",
+      "name": "Google Sheets - Read Pending Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -304,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6t0KpTOQsaPzUr6V",
+          "name": "PP_GoogleSheets_04Jul"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.Content_ID }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "rightValue": "",
+              "id": "b77ae1e5-e53b-4f4a-8092-b15a2df28366"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "593ba4db-2df2-4f54-b207-f558a32f6485",
+      "name": "If - Pending Row Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -112,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "Content_ID",
+              "value": "={{ $json.Content_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "Topic",
+              "value": "={{ $json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "Context",
+              "value": "={{ $json['Context'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "Key_Facts",
+              "value": "={{ $json['Key_Facts'] }}",
+              "type": "string"
+            },
+            {
+              "id": "5e89b939-f209-44b3-a2da-7e2a55f450c0",
+              "name": "Angle",
+              "value": "={{ $json['Angle'] }}",
+              "type": "string"
+            },
+            {
+              "id": "002dfdcb-6cd1-45c0-aca2-8f8390442a1f",
+              "name": "Audience",
+              "value": "={{ $json['Audience'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b3547725-9ca5-4980-a606-369dc94b0b27",
+              "name": "Format",
+              "value": "={{ $json['Format'] }}",
+              "type": "string"
+            },
+            {
+              "id": "e7efa8ab-5d9a-49bf-bece-3650710b5194",
+              "name": "LinkedIn_Post",
+              "value": "={{ $json['LinkedIn_Post'] }}",
+              "type": "string"
+            },
+            {
+              "id": "bf73b9f7-75df-4242-a9a5-d39514663146",
+              "name": "Hashtags",
+              "value": "={{ $json['Hashtags'] }}",
+              "type": "string"
+            },
+            {
+              "id": "b4a0c4e5-d45f-44d9-a76b-7baf726e9fd2",
+              "name": "Infographic_Title",
+              "value": "={{ $json['Infographic_Title'] }}",
+              "type": "string"
+            },
+            {
+              "id": "9cee546f-f51a-4345-a34c-2b2b7425d8ef",
+              "name": "Infographic_Prompt",
+              "value": "={{ $json['Infographic_Prompt'] }}",
+              "type": "string"
+            },
+            {
+              "id": "7201d4f3-e07a-40dc-bf81-47bea6a82061",
+              "name": "Infographic_Image",
+              "value": "={{\n  (() => {\n    const url = $json['Infographic_Image'] || '';\n    const match = url.match(/\\/d\\/([^/]+)/);\n    return match\n      ? `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1600`\n      : url;\n  })()\n}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c314b40-7294-435c-8aa6-d0b6c832d00a",
+      "name": "Set - Prepare Content Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.LinkedIn_Post }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are a professional social media copywriter for the Facebook Page Incident2Insight.\n\nYour task is to transform the supplied LinkedIn post into a polished Facebook post.\n\nPreserve:\n- The original message and key insight\n- The factual meaning\n- The Incident2Insight professional voice\n\nAdapt:\n- Make the opening engaging for Facebook\n- Improve readability with short paragraphs\n- Make the language natural and conversational\n- Retain relevant hashtags\n- Do not invent facts, statistics, achievements, or claims\n- Do not mention LinkedIn\n- Do not use markdown tables\n- Return only the final Facebook post text"
+            },
+            {
+              "type": "HumanMessagePromptTemplate",
+              "message": "=Topic: {{ $json.Topic }}\n\nContent to transform:\n\n{{ $json.LinkedIn_Post }}"
+            }
+          ]
+        },
+        "batching": {
+          "batchSize": 5,
+          "delayBetweenBatches": 0
+        }
+      },
+      "id": "c9e56392-312d-4d43-af89-c1656e5c7746",
+      "name": "AI - Improve Caption",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        320,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {
+          "maxOutputTokens": 2048,
+          "temperature": 0.6,
+          "topP": 0.9
+        }
+      },
+      "id": "d237df2f-9330-4dbf-8af3-0e20c6ff0e2d",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        288
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "hppJB4cMljmbWIXp",
+          "name": "Google Gemini(PaLM) Api account 96"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "finalCaption",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "a560d123-81f5-40de-877b-62f1071d2e8d",
+              "name": "headline",
+              "value": "={{ $('Set - Prepare Content Data').item.json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "657356e3-3071-463d-b15e-1b1666df4ecb",
+              "name": "subtext",
+              "value": "={{ $('Set - Prepare Content Data').item.json.Context }}",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "id",
+              "value": "={{ $('Set - Prepare Content Data').item.json.Content_ID }}",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "topic",
+              "value": "={{ $('Set - Prepare Content Data').item.json.Topic }}",
+              "type": "string"
+            },
+            {
+              "id": "b4",
+              "name": "imageUrl",
+              "value": "={{ $('Set - Prepare Content Data').item.json.Infographic_Image }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "af05bae6-4922-46bd-843f-6428a464050a",
+      "name": "Set - Extract Final Caption",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        640,
+        16
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "855c1335-302c-4ea1-af76-233549b785ed",
+      "name": "No Pending Rows Found",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        112,
+        272
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "02fe1497-4139-44bc-9793-10d1ba0bafc0",
+              "name": "ID",
+              "value": "={{ $('Set - Extract Final Caption').item.json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d091885e-d242-414c-9a4a-42a16e4aaede",
+              "name": "Topic",
+              "value": "={{ $('Set - Extract Final Caption').item.json.topic }}",
+              "type": "string"
+            },
+            {
+              "id": "e7c005f0-6e16-4d29-9563-72e8abcabf29",
+              "name": "=Caption",
+              "value": "={{ $('Set - Extract Final Caption').item.json.finalCaption }}",
+              "type": "string"
+            },
+            {
+              "id": "fce05813-07ba-4d26-8417-ae9e1887151c",
+              "name": "ImageURL",
+              "value": "={{ $('Set - Extract Final Caption').item.json.imageUrl }}",
+              "type": "string"
+            },
+            {
+              "id": "935eb92e-000a-407b-85b6-1de4e2aa0242",
+              "name": "Status",
+              "value": "Waiting Approval",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        864,
+        16
+      ],
+      "id": "231fe157-3587-4695-8d69-026d8f3d590f",
+      "name": "Set - Prepare Approval Data"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw",
+          "mode": "list",
+          "cachedResultName": "Incident2Insight",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Topic": "={{ $json.Topic }}",
+            "Draft Caption": "={{ $json.Caption }}",
+            "Image URL": "={{ $json.ImageURL }}",
+            "Status": "={{ $json.Status }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Draft Caption",
+              "displayName": "Draft Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Published URL",
+              "displayName": "Published URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Published Date",
+              "displayName": "Published Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook Post ID",
+              "displayName": "Facebook Post ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1072,
+        16
+      ],
+      "id": "451dc528-547f-4ed1-9a25-ad58d0e7382c",
+      "name": "Google Sheets - Update Row",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6t0KpTOQsaPzUr6V",
+          "name": "PP_GoogleSheets_04Jul"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.bannerbear.com/v2/images?wait=true",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"template\": \"2j8dyQZWMzlKD7A9Lm\",\n  \"modifications\": [\n    { \"name\": \"headline\", \"text\": \"{{ $json.headline }}\" },\n    { \"name\": \"subtext\", \"text\": \"{{ $json.subtext }}\" }\n  ],\n  \"transparent\": false\n}",
+        "options": {
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        -320
+      ],
+      "id": "550d89e1-999b-4d7d-bfac-614e556df1ab",
+      "name": "Generate Branded Image",
+      "alwaysOutputData": false,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RRZkUA9sRpNxbAJl",
+          "name": "Bannerbear API - Incident2Insight"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e43fd418-8b3f-4b4d-9bb6-2d8ee41a263f",
+              "name": "pollAttempt",
+              "value": "={{ $json.pollAttempt || 0 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        896,
+        -320
+      ],
+      "id": "1dbcb9f2-236a-4ae8-862a-25d351a95ce0",
+      "name": "Set - Init Poll Counter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "45292ff3-1ade-4e35-8ed5-812866088245",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "completed",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1120,
+        -320
+      ],
+      "id": "4820e0b9-2a7e-48cf-92d8-eeb605924c90",
+      "name": "If - Image Ready"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f53d3fa9-4faf-49ad-b319-34504e9034f9",
+              "leftValue": "={{ $json.pollAttempt }}",
+              "rightValue": "6",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1408,
+        -304
+      ],
+      "id": "7c37ad1e-f2dc-4dbc-a14f-6f50d07bab89",
+      "name": "If - Max Attempts Reached"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1696,
+        -288
+      ],
+      "id": "5959c994-fc3d-4ffa-b303-53d1459167bd",
+      "name": "Wait",
+      "webhookId": "68a238d8-a586-430b-aa66-29a5430f4bf4"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.self }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1872,
+        -288
+      ],
+      "id": "94488503-92ae-44a1-b770-5e0c326fe768",
+      "name": "Check Image Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "RRZkUA9sRpNxbAJl",
+          "name": "Bannerbear API - Incident2Insight"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e43fd418-8b3f-4b4d-9bb6-2d8ee41a263f",
+              "name": "pollAttempt",
+              "value": "={{ $('If - Max Attempts Reached').item.json.pollAttempt + 1 }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2016,
+        -288
+      ],
+      "id": "100fd2c0-026e-4453-81d2-9f57a8cd76b6",
+      "name": "Set - Increment Poll Counter"
+    },
+    {
+      "parameters": {
+        "sendTo": "prasad_pankaj@hotmail.com",
+        "subject": "=Facebook Approval Required - {{ $('Set - Prepare Approval Data').item.json.Topic }}",
+        "message": "=<h2>📢 Facebook Post Approval Required</h2>  <hr>  <b>Topic</b>  <p>{{ $('Set - Prepare Approval Data').item.json.Topic }}</p>  <hr>  <b>AI Generated Caption</b>  <p>{{ $('Set - Prepare Approval Data').item.json.Caption }}</p>  <hr>  <b>Image</b>  <p><img src=\"{{ $('Set - Prepare Approval Data').item.json.ImageURL }}\" width=\"500\"/></p>  <hr>  <b>Status</b>  <p>{{ $json.Status }}</p>  <hr>  <p> Please review the caption and image.  If you approve,  <b>change the Status in Google Sheet from</b>  <font color=\"blue\">Waiting Approval</font>  <b>to</b>  <font color=\"green\">Approved</font>  The Facebook Publisher workflow will automatically publish it. </p>  <br>  <p> Incident2Insight Automation </p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1296,
+        16
+      ],
+      "id": "e0d8c001-2aff-4860-b3a5-7af305e9be6e",
+      "name": "Send Approval",
+      "webhookId": "4c6c435e-84d9-4db8-b5a9-ec0f09ba72ce",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "Jy8rJs1QmjkUe1M6",
+          "name": "PP_Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Pending Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Pending Row": {
+      "main": [
+        [
+          {
+            "node": "If - Pending Row Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Pending Row Found": {
+      "main": [
+        [
+          {
+            "node": "Set - Prepare Content Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Pending Rows Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Prepare Content Data": {
+      "main": [
+        [
+          {
+            "node": "AI - Improve Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI - Improve Caption": {
+      "main": [
+        [
+          {
+            "node": "Set - Extract Final Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI - Improve Caption",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Extract Final Caption": {
+      "main": [
+        [
+          {
+            "node": "Set - Prepare Approval Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Prepare Approval Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Update Row": {
+      "main": [
+        [
+          {
+            "node": "Send Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Branded Image": {
+      "main": [
+        [
+          {
+            "node": "Set - Init Poll Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Init Poll Counter": {
+      "main": [
+        [
+          {
+            "node": "If - Image Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Image Ready": {
+      "main": [
+        [],
+        [
+          {
+            "node": "If - Max Attempts Reached",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Max Attempts Reached": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Image Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Image Status": {
+      "main": [
+        [
+          {
+            "node": "Set - Increment Poll Counter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Increment Poll Counter": {
+      "main": [
+        [
+          {
+            "node": "If - Image Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "dfdf8851-21ac-497b-b552-375b1d3f11e5",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e99e0d1157c9445a053edb1d8bcb3c19869f806f2b50808813faa4f314de9dd4"
+  },
+  "id": "nmIMxCyRIzkrrJnf",
+  "tags": []
+}

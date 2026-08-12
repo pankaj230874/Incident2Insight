@@ -1,0 +1,633 @@
+{
+  "name": "2-Facebook_Content_Publisher",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "8b6d8fb6-1438-4c0c-8ced-bf08b77fd8b4",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json['Draft Caption'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "rightValue": "",
+              "id": "9ff88201-80de-411e-a6cd-0dd186fefc9e"
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": "=",
+        "options": {}
+      },
+      "id": "588bd786-53d1-438d-ac98-550349de8d7a",
+      "name": "If - Caption Not Empty",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        16
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json['Image URL'] }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "rightValue": "",
+              "id": "5c997bc7-f48c-4f64-934f-46bdddeb4d64"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b3011940-6e04-4794-98f2-5145642f315a",
+      "name": "If - Image URL Exists",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v23.0/1081348701733494/photos",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{$json[\"Image URL\"]}}"
+            },
+            {
+              "name": "caption",
+              "value": "={{$json[\"Draft Caption\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "5a2f9c30-f95b-48de-85ca-fe5d771c7ec2",
+      "name": "Facebook - Upload Photo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        -400
+      ],
+      "executeOnce": false,
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "3JCeSHYwvBn7968S",
+          "name": "Incident2Insight-Facebook Graph API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "ID",
+              "value": "={{$('If - Image URL Exists').item.json.ID}}",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "Status",
+              "value": "=Published",
+              "type": "string"
+            },
+            {
+              "id": "c3",
+              "name": "facebookPostId",
+              "value": "={{ $json.post_id || $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c4",
+              "name": "publishedUrl",
+              "value": "={{ 'https://www.facebook.com/' + ($json.post_id || $json.id) }}",
+              "type": "string"
+            },
+            {
+              "id": "c5",
+              "name": "publishedDate",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c95f8e69-4b2f-4d7c-8159-1f137c0ee9a1",
+      "name": "Set - Prepare Update Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        -288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1",
+              "name": "ID",
+              "value": "={{ $json.ID }}",
+              "type": "string"
+            },
+            {
+              "id": "e2",
+              "name": "Status",
+              "value": "Failed",
+              "type": "string"
+            },
+            {
+              "id": "e3",
+              "name": "errorNote",
+              "value": "={{ $json.error?.message || $json.message || 'Unknown error during publish' }}",
+              "type": "string"
+            },
+            {
+              "id": "e4",
+              "name": "publishedDate",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "0ad62af7-ff03-4acf-aafd-f898970a250a",
+      "name": "Set - Capture Publish Failure",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1168,
+        32
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v23.0/1081348701733494/feed",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "facebookGraphApi",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{$json[\"Draft Caption\"]}}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {}
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "3a7a7391-967e-4ec4-bd57-951167fdc3da",
+      "name": "Facebook - Post Text Only",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        720,
+        -160
+      ],
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "3JCeSHYwvBn7968S",
+          "name": "Incident2Insight-Facebook Graph API"
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {},
+      "id": "482916a8-a2fc-4877-a537-40af77977be5",
+      "name": "No Pending Rows Found",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        256,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw",
+          "mode": "list",
+          "cachedResultName": "Incident2Insight",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Status": "={{ $json.Status }}",
+            "Facebook Post ID": "={{ $json.facebookPostId }}",
+            "Published URL": "={{ $json.publishedUrl }}",
+            "Published Date": "={{ $json.publishedDate }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Topic",
+              "displayName": "Topic",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Draft Caption",
+              "displayName": "Draft Caption",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Image URL",
+              "displayName": "Image URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Published URL",
+              "displayName": "Published URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Published Date",
+              "displayName": "Published Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Facebook Post ID",
+              "displayName": "Facebook Post ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Notes",
+              "displayName": "Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9acf8f06-e2c0-4a19-b513-faedd4a11301",
+      "name": "Google Sheets - Update Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1360,
+        -288
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6t0KpTOQsaPzUr6V",
+          "name": "PP_GoogleSheets_04Jul"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw",
+          "mode": "list",
+          "cachedResultName": "Incident2Insight",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1_1OnlI4d3yr9gFydFFMbn3qwHb36JVjiEZAfYx1drdw/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Approved"
+            },
+            {
+              "lookupColumn": "Published URL"
+            }
+          ]
+        },
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "id": "42ff21df-3f6f-4c5b-9638-87e5d631572b",
+      "name": "Google Sheets - Read Approved Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -224,
+        128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "6t0KpTOQsaPzUr6V",
+          "name": "PP_GoogleSheets_04Jul"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ID }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              },
+              "rightValue": "",
+              "id": "cf94dc98-a0b1-40a0-b0c7-667e463c7251"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "6fa06e64-645e-4803-b42f-5cbb6fa17714",
+      "name": "If - Approved Row Found",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        128
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Read Approved Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Caption Not Empty": {
+      "main": [
+        [
+          {
+            "node": "If - Image URL Exists",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Capture Publish Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Image URL Exists": {
+      "main": [
+        [
+          {
+            "node": "Facebook - Upload Photo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Facebook - Post Text Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook - Upload Photo": {
+      "main": [
+        [
+          {
+            "node": "Set - Prepare Update Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Capture Publish Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook - Post Text Only": {
+      "main": [
+        [
+          {
+            "node": "Set - Prepare Update Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set - Capture Publish Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set - Prepare Update Data": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets - Update Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets - Read Approved Row": {
+      "main": [
+        [
+          {
+            "node": "If - Approved Row Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If - Approved Row Found": {
+      "main": [
+        [
+          {
+            "node": "If - Caption Not Empty",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Pending Rows Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "3baab2d4-d5f2-43e8-8df8-07759c8fb012",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e99e0d1157c9445a053edb1d8bcb3c19869f806f2b50808813faa4f314de9dd4"
+  },
+  "id": "NnhFwElqnEVN4soE",
+  "tags": []
+}
